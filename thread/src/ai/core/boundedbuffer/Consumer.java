@@ -8,19 +8,13 @@ public class Consumer implements Runnable {
 	private final int waitTime;
 	private final Random random = new Random();
 	
-
-
-
 	public Consumer(Buffer buffer, String name, int waitTime) {
 		super();
 		this.buffer = buffer;
 		this.name = name;
 		this.waitTime = waitTime;
 	}
-
-
-
-
+	
 	@Override
 	public void run() {
 		while (true)

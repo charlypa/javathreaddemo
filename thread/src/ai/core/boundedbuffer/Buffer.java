@@ -7,7 +7,6 @@ public class Buffer {
 	private final int DEFAULT_SIZE = 10;
 	private final Semaphore full;
 	private final Semaphore empty;
-	private final Object buffermutex = new Object();
 	private final Object producerMutex = new Object();
 	private final Object consumerMutex = new Object();
 	private int in = 0;
@@ -30,18 +29,14 @@ public class Buffer {
 	{
 		try {
 		
-			//synchronized (producerMutex) 
+			empty.acquire();
+			synchronized(producerMutex)
 			{
-				empty.acquire();
-				synchronized(producerMutex)
-				//synchronized (buffermutex) 
-				{
-					buffer[in] = item;
-					in = (in + 1)%buffer.length;
-					
-				}
-				full.release();
+				buffer[in] = item;
+				in = (in + 1)%buffer.length;
+				
 			}
+			full.release();
 			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -52,17 +47,13 @@ public class Buffer {
 	{
 		int retval = -1;
 		try {
-			//synchronized (consumerMutex) 
-			{
 				full.acquire();
 				synchronized(consumerMutex)
-				//synchronized(buffermutex)
 				{
 					retval = buffer[out];
 					out = (out + 1) % buffer.length;
 				}
 				empty.release();
-			}
 			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
